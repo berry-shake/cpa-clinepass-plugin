@@ -1,0 +1,396 @@
+{
+  "case": "catalog_models_for_auth",
+  "description": "model.for_auth loads the ClinePass offers (namespace stripped, duplicates and other lists skipped) once; a model selection with a retired model; the management models view",
+  "setup": {
+    "version": "9.9.9-snapshot",
+    "config": {
+      "base-url": "{{UPSTREAM}}",
+      "data-dir": "{{DATA_DIR}}",
+      "enabled": true,
+      "priority": 0
+    },
+    "credentials": [
+      {
+        "name": "clinepass-k1.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0001",
+          "type": "clinepass"
+        }
+      },
+      {
+        "name": "clinepass-k2.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0002",
+          "models": [
+            "retired-model",
+            "kimi-k3"
+          ],
+          "prefix": "cp",
+          "type": "clinepass"
+        }
+      }
+    ]
+  },
+  "upstream_script": [
+    {
+      "method": "GET",
+      "path": "/api/v1/ai/cline/recommended-models",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"recommended\":[{\"id\":\"anthropic/claude-sonnet-5.5\",\"name\":\"claude-sonnet-5.5\",\"description\":\"\",\"tags\":[]}],\"free\":[],\"clinePass\":[{\"id\":\"cline-pass/kimi-k3\",\"name\":\"cline-pass/kimi-k3\",\"description\":\"Moonshot Kimi K3\",\"tags\":[\"NEW\"]},{\"id\":\"cline-pass/deepseek-v4.1-flash-1017\",\"name\":\"cline-pass/deepseek-v4.1-flash-1017\",\"description\":\"\",\"tags\":[]},{\"id\":\"cline-pass/glm-5.3\",\"name\":\"cline-pass/glm-5.3\",\"description\":\"Z-AI's new top open-weights model\",\"tags\":[]},{\"id\":\"cline-pass/kimi-k3\",\"name\":\"duplicate\",\"description\":\"\",\"tags\":[]},{\"id\":\"other/model\",\"name\":\"other\",\"description\":\"\",\"tags\":[]}],\"clineCloud\":[]}",
+      "chunks": []
+    }
+  ],
+  "steps": [
+    {
+      "rpc": {
+        "method": "model.static",
+        "request": null
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "Provider": "clinepass",
+            "Models": null,
+            "AuthUpdate": {
+              "Provider": "",
+              "ID": "",
+              "FileName": "",
+              "Label": "",
+              "Prefix": "",
+              "ProxyURL": "",
+              "Disabled": false,
+              "StorageJSON": null,
+              "Metadata": null,
+              "Attributes": null,
+              "NextRefreshAfter": "0001-01-01T00:00:00Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "model.for_auth",
+        "request": {
+          "Plugin": {
+            "Name": "",
+            "Version": "",
+            "Author": "",
+            "GitHubRepository": "",
+            "Logo": "",
+            "ConfigFields": null
+          },
+          "AuthID": "clinepass-k1.json",
+          "AuthProvider": "clinepass",
+          "StorageJSON": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "Metadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "Attributes": null,
+          "Host": {
+            "AuthDir": "/auths",
+            "ProxyURL": "",
+            "ForceModelPrefix": false,
+            "OAuthModelAlias": null,
+            "ExcludedModels": null
+          },
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/ai/cline/recommended-models",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "Provider": "clinepass",
+            "Models": [
+              {
+                "ID": "deepseek-v4.1-flash-1017",
+                "Object": "model",
+                "Created": 0,
+                "OwnedBy": "clinepass",
+                "Type": "clinepass",
+                "DisplayName": "deepseek-v4.1-flash-1017",
+                "Name": "deepseek-v4.1-flash-1017",
+                "Version": "",
+                "Description": "ClinePass · deepseek-v4.1-flash-1017",
+                "InputTokenLimit": 0,
+                "OutputTokenLimit": 0,
+                "SupportedGenerationMethods": null,
+                "ContextLength": 0,
+                "MaxCompletionTokens": 0,
+                "SupportedParameters": null,
+                "SupportedInputModalities": null,
+                "SupportedOutputModalities": null,
+                "Thinking": null,
+                "UserDefined": true
+              },
+              {
+                "ID": "glm-5.3",
+                "Object": "model",
+                "Created": 0,
+                "OwnedBy": "clinepass",
+                "Type": "clinepass",
+                "DisplayName": "glm-5.3",
+                "Name": "glm-5.3",
+                "Version": "",
+                "Description": "ClinePass · glm-5.3 · Z-AI's new top open-weights model",
+                "InputTokenLimit": 0,
+                "OutputTokenLimit": 0,
+                "SupportedGenerationMethods": null,
+                "ContextLength": 0,
+                "MaxCompletionTokens": 0,
+                "SupportedParameters": null,
+                "SupportedInputModalities": null,
+                "SupportedOutputModalities": null,
+                "Thinking": null,
+                "UserDefined": true
+              },
+              {
+                "ID": "kimi-k3",
+                "Object": "model",
+                "Created": 0,
+                "OwnedBy": "clinepass",
+                "Type": "clinepass",
+                "DisplayName": "kimi-k3",
+                "Name": "kimi-k3",
+                "Version": "",
+                "Description": "ClinePass · kimi-k3 · Moonshot Kimi K3",
+                "InputTokenLimit": 0,
+                "OutputTokenLimit": 0,
+                "SupportedGenerationMethods": null,
+                "ContextLength": 0,
+                "MaxCompletionTokens": 0,
+                "SupportedParameters": null,
+                "SupportedInputModalities": null,
+                "SupportedOutputModalities": null,
+                "Thinking": null,
+                "UserDefined": true
+              }
+            ],
+            "AuthUpdate": {
+              "Provider": "",
+              "ID": "",
+              "FileName": "",
+              "Label": "",
+              "Prefix": "",
+              "ProxyURL": "",
+              "Disabled": false,
+              "StorageJSON": null,
+              "Metadata": null,
+              "Attributes": null,
+              "NextRefreshAfter": "0001-01-01T00:00:00Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "model.for_auth",
+        "request": {
+          "Plugin": {
+            "Name": "",
+            "Version": "",
+            "Author": "",
+            "GitHubRepository": "",
+            "Logo": "",
+            "ConfigFields": null
+          },
+          "AuthID": "clinepass-k2.json",
+          "AuthProvider": "clinepass",
+          "StorageJSON": {
+            "api_key": "cline_test_fake_key_0002",
+            "models": [
+              "retired-model",
+              "kimi-k3"
+            ],
+            "prefix": "cp",
+            "type": "clinepass"
+          },
+          "Metadata": {
+            "api_key": "cline_test_fake_key_0002",
+            "models": [
+              "retired-model",
+              "kimi-k3"
+            ],
+            "prefix": "cp",
+            "type": "clinepass"
+          },
+          "Attributes": null,
+          "Host": {
+            "AuthDir": "/auths",
+            "ProxyURL": "",
+            "ForceModelPrefix": true,
+            "OAuthModelAlias": null,
+            "ExcludedModels": null
+          },
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "Provider": "clinepass",
+            "Models": [
+              {
+                "ID": "kimi-k3",
+                "Object": "model",
+                "Created": 0,
+                "OwnedBy": "clinepass",
+                "Type": "clinepass",
+                "DisplayName": "kimi-k3",
+                "Name": "kimi-k3",
+                "Version": "",
+                "Description": "ClinePass · kimi-k3 · Moonshot Kimi K3",
+                "InputTokenLimit": 0,
+                "OutputTokenLimit": 0,
+                "SupportedGenerationMethods": null,
+                "ContextLength": 0,
+                "MaxCompletionTokens": 0,
+                "SupportedParameters": null,
+                "SupportedInputModalities": null,
+                "SupportedOutputModalities": null,
+                "Thinking": null,
+                "UserDefined": true
+              },
+              {
+                "ID": "retired-model",
+                "Object": "model",
+                "Created": 0,
+                "OwnedBy": "clinepass",
+                "Type": "clinepass",
+                "DisplayName": "retired-model",
+                "Name": "retired-model",
+                "Version": "",
+                "Description": "ClinePass · retired-model",
+                "InputTokenLimit": 0,
+                "OutputTokenLimit": 0,
+                "SupportedGenerationMethods": null,
+                "ContextLength": 0,
+                "MaxCompletionTokens": 0,
+                "SupportedParameters": null,
+                "SupportedInputModalities": null,
+                "SupportedOutputModalities": null,
+                "Thinking": null,
+                "UserDefined": true
+              }
+            ],
+            "AuthUpdate": {
+              "Provider": "",
+              "ID": "",
+              "FileName": "",
+              "Label": "",
+              "Prefix": "",
+              "ProxyURL": "",
+              "Disabled": false,
+              "StorageJSON": null,
+              "Metadata": null,
+              "Attributes": null,
+              "NextRefreshAfter": "0001-01-01T00:00:00Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "management.handle",
+        "request": {
+          "Method": "GET",
+          "Path": "/v0/management/plugins/clinepass/models",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ]
+          },
+          "Query": null,
+          "Body": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "StatusCode": 200,
+            "Headers": {
+              "Cache-Control": [
+                "no-store"
+              ],
+              "Content-Type": [
+                "application/json; charset=utf-8"
+              ]
+            },
+            "Body": {
+              "catalog": {
+                "count": 3,
+                "revision": "08d1b3cdceafa4c4",
+                "fetched_at": "2026-01-02T03:04:05Z",
+                "checked_at": "2026-01-02T03:04:05Z"
+              },
+              "models": [
+                {
+                  "id": "deepseek-v4.1-flash-1017",
+                  "upstream_id": "cline-pass/deepseek-v4.1-flash-1017",
+                  "name": "deepseek-v4.1-flash-1017"
+                },
+                {
+                  "id": "glm-5.3",
+                  "upstream_id": "cline-pass/glm-5.3",
+                  "name": "glm-5.3",
+                  "description": "Z-AI's new top open-weights model"
+                },
+                {
+                  "id": "kimi-k3",
+                  "upstream_id": "cline-pass/kimi-k3",
+                  "name": "kimi-k3",
+                  "description": "Moonshot Kimi K3",
+                  "tags": [
+                    "NEW"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

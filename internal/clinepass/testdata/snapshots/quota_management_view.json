@@ -1,0 +1,373 @@
+{
+  "case": "quota_management_view",
+  "description": "The management quota view: plan usage with the account hash, a rejected key (400), an unknown credential (404)",
+  "setup": {
+    "version": "9.9.9-snapshot",
+    "config": {
+      "base-url": "{{UPSTREAM}}",
+      "data-dir": "{{DATA_DIR}}",
+      "enabled": true,
+      "priority": 0
+    },
+    "credentials": [
+      {
+        "name": "clinepass-k1.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0001",
+          "type": "clinepass"
+        }
+      },
+      {
+        "name": "clinepass-k2.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0002",
+          "type": "clinepass"
+        }
+      }
+    ]
+  },
+  "upstream_script": [
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan/usage-limits",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":true,\"data\":{\"limits\":[{\"type\":\"five_hour\",\"percentUsed\":12.5,\"resetsAt\":\"2026-01-02T07:00:00Z\"},{\"type\":\"weekly\",\"percentUsed\":40,\"resetsAt\":\"2026-01-05T00:00:00Z\"},{\"type\":\"monthly\",\"percentUsed\":75,\"resetsAt\":\"2026-01-20T09:30:00Z\"}]}}",
+      "chunks": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":true,\"data\":{\"userId\":\"user-fake-1\",\"subscriptionId\":\"sub-fake-1\",\"currentPeriodEnd\":\"2026-01-20T09:30:00Z\",\"plan\":{\"displayName\":\"Cline Pass (Monthly)\"}}}",
+      "chunks": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan/usage-limits",
+      "status": 401,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":false,\"error\":\"Unauthorized\"}",
+      "chunks": []
+    }
+  ],
+  "steps": [
+    {
+      "rpc": {
+        "method": "management.handle",
+        "request": {
+          "Method": "GET",
+          "Path": "/v0/management/plugins/clinepass/credentials/quota",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ]
+          },
+          "Query": {
+            "auth_index": [
+              "idx-1"
+            ]
+          },
+          "Body": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan/usage-limits",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [
+          {
+            "method": "host.auth.get",
+            "request": {
+              "auth_index": "idx-1"
+            }
+          }
+        ],
+        "response": {
+          "ok": true,
+          "result": {
+            "StatusCode": 200,
+            "Headers": {
+              "Cache-Control": [
+                "no-store"
+              ],
+              "Content-Type": [
+                "application/json; charset=utf-8"
+              ]
+            },
+            "Body": {
+              "account": "60dcbe014b64e754",
+              "plan": {
+                "name": "Cline Pass (Monthly)",
+                "period_end": "2026-01-20T09:30:00Z"
+              },
+              "windows": [
+                {
+                  "type": "five_hour",
+                  "percent_used": 12.5,
+                  "resets_at": "2026-01-02T07:00:00Z"
+                },
+                {
+                  "type": "weekly",
+                  "percent_used": 40,
+                  "resets_at": "2026-01-05T00:00:00Z"
+                },
+                {
+                  "type": "monthly",
+                  "percent_used": 75,
+                  "resets_at": "2026-01-20T09:30:00Z"
+                }
+              ],
+              "fetched_at": "2026-01-02T03:04:05Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "management.handle",
+        "request": {
+          "Method": "GET",
+          "Path": "/v0/management/plugins/clinepass/credentials/quota",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ]
+          },
+          "Query": {
+            "auth_index": [
+              "idx-2"
+            ]
+          },
+          "Body": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan/usage-limits",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0002"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [
+          {
+            "method": "host.auth.get",
+            "request": {
+              "auth_index": "idx-2"
+            }
+          }
+        ],
+        "response": {
+          "ok": true,
+          "result": {
+            "StatusCode": 400,
+            "Headers": {
+              "Cache-Control": [
+                "no-store"
+              ],
+              "Content-Type": [
+                "application/json; charset=utf-8"
+              ]
+            },
+            "Body": {
+              "error": "upstream_401",
+              "message": "clinepass: Unauthorized"
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "management.handle",
+        "request": {
+          "Method": "GET",
+          "Path": "/v0/management/plugins/clinepass/credentials/quota",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ]
+          },
+          "Query": {
+            "auth_index": [
+              "idx-99"
+            ]
+          },
+          "Body": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [
+          {
+            "method": "host.auth.get",
+            "request": {
+              "auth_index": "idx-99"
+            }
+          }
+        ],
+        "response": {
+          "ok": true,
+          "result": {
+            "StatusCode": 404,
+            "Headers": {
+              "Cache-Control": [
+                "no-store"
+              ],
+              "Content-Type": [
+                "application/json; charset=utf-8"
+              ]
+            },
+            "Body": {
+              "error": "credential_not_found",
+              "message": "no ClinePass credential matches auth_index"
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "management.handle",
+        "request": {
+          "Method": "GET",
+          "Path": "/v0/management/plugins/clinepass/credentials/quota",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ]
+          },
+          "Query": {
+            "auth_index": [
+              "idx-1"
+            ]
+          },
+          "Body": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [
+          {
+            "method": "host.auth.get",
+            "request": {
+              "auth_index": "idx-1"
+            }
+          }
+        ],
+        "response": {
+          "ok": true,
+          "result": {
+            "StatusCode": 200,
+            "Headers": {
+              "Cache-Control": [
+                "no-store"
+              ],
+              "Content-Type": [
+                "application/json; charset=utf-8"
+              ]
+            },
+            "Body": {
+              "account": "60dcbe014b64e754",
+              "plan": {
+                "name": "Cline Pass (Monthly)",
+                "period_end": "2026-01-20T09:30:00Z"
+              },
+              "windows": [
+                {
+                  "type": "five_hour",
+                  "percent_used": 12.5,
+                  "resets_at": "2026-01-02T07:00:00Z"
+                },
+                {
+                  "type": "weekly",
+                  "percent_used": 40,
+                  "resets_at": "2026-01-05T00:00:00Z"
+                },
+                {
+                  "type": "monthly",
+                  "percent_used": 75,
+                  "resets_at": "2026-01-20T09:30:00Z"
+                }
+              ],
+              "fetched_at": "2026-01-02T03:04:05Z"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

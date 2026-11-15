@@ -1,0 +1,251 @@
+{
+  "case": "lifecycle_register_and_identifiers",
+  "description": "plugin.register declares chat-completions only, identifiers, unsupported operations, shutdown",
+  "setup": {
+    "version": "9.9.9-snapshot",
+    "config": {
+      "base-url": "{{UPSTREAM}}",
+      "data-dir": "{{DATA_DIR}}",
+      "enabled": true,
+      "priority": 0
+    },
+    "credentials": []
+  },
+  "upstream_script": [
+    {
+      "method": "GET",
+      "path": "/api/v1/ai/cline/recommended-models",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"recommended\":[{\"id\":\"anthropic/claude-sonnet-5.5\",\"name\":\"claude-sonnet-5.5\",\"description\":\"\",\"tags\":[]}],\"free\":[],\"clinePass\":[{\"id\":\"cline-pass/kimi-k3\",\"name\":\"cline-pass/kimi-k3\",\"description\":\"Moonshot Kimi K3\",\"tags\":[\"NEW\"]},{\"id\":\"cline-pass/deepseek-v4.1-flash-1017\",\"name\":\"cline-pass/deepseek-v4.1-flash-1017\",\"description\":\"\",\"tags\":[]},{\"id\":\"cline-pass/glm-5.3\",\"name\":\"cline-pass/glm-5.3\",\"description\":\"Z-AI's new top open-weights model\",\"tags\":[]},{\"id\":\"cline-pass/kimi-k3\",\"name\":\"duplicate\",\"description\":\"\",\"tags\":[]},{\"id\":\"other/model\",\"name\":\"other\",\"description\":\"\",\"tags\":[]}],\"clineCloud\":[]}",
+      "chunks": []
+    }
+  ],
+  "steps": [
+    {
+      "rpc": {
+        "method": "plugin.register",
+        "request": {
+          "config_yaml": "base-url: '{{UPSTREAM}}'\ndata-dir: '{{DATA_DIR}}'\nenabled: true\npriority: 0\n",
+          "schema_version": 10
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/ai/cline/recommended-models",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [
+          {
+            "method": "host.auth.list",
+            "request": {}
+          }
+        ],
+        "response": {
+          "ok": true,
+          "result": {
+            "schema_version": 7,
+            "metadata": {
+              "Name": "ClinePass",
+              "Version": "9.9.9-snapshot",
+              "Author": "berry-shake",
+              "GitHubRepository": "https://github.com/berry-shake/cpa-clinepass-plugin",
+              "Logo": "/v0/resource/plugins/clinepass/logo.svg",
+              "ConfigFields": [
+                {
+                  "Name": "base-url",
+                  "Type": "string",
+                  "Default": "https://api.cline.bot",
+                  "EnumValues": null,
+                  "Description": "Cline API origin (https://api.cline.bot); a trailing /api/v1 is dropped. Auth files may override it with base_url."
+                },
+                {
+                  "Name": "model-prefix",
+                  "Type": "string",
+                  "Default": "clinepass",
+                  "EnumValues": null,
+                  "Description": "Default CPA prefix for ClinePass keys (\"clinepass\" -> clinepass/kimi-k3). Empty adds no prefix. An auth file's own prefix field wins."
+                },
+                {
+                  "Name": "models-refresh-minutes",
+                  "Type": "integer",
+                  "Default": 60,
+                  "EnumValues": null,
+                  "Description": "How often to reload the ClinePass model list; 0 disables polling."
+                },
+                {
+                  "Name": "request-timeout-seconds",
+                  "Type": "integer",
+                  "Default": 600,
+                  "EnumValues": null,
+                  "Description": "Timeout for non-streaming requests and for stream response headers."
+                },
+                {
+                  "Name": "stream-idle-timeout-seconds",
+                  "Type": "integer",
+                  "Default": 300,
+                  "EnumValues": null,
+                  "Description": "Abort a stream after this long without upstream bytes."
+                },
+                {
+                  "Name": "data-dir",
+                  "Type": "string",
+                  "Default": "plugins/clinepass-data",
+                  "EnumValues": null,
+                  "Description": "Directory for plugin data: the request log database (clinepass.db) and the proxy list (proxies.json), relative to CPA's working directory."
+                },
+                {
+                  "Name": "log-retention",
+                  "Type": "integer",
+                  "Default": 100000,
+                  "EnumValues": null,
+                  "Description": "Most requests the request log keeps; 0 disables it."
+                },
+                {
+                  "Name": "log-retention-days",
+                  "Type": "integer",
+                  "Default": 30,
+                  "EnumValues": null,
+                  "Description": "Drop request log entries older than this many days; 0 keeps them until log-retention is reached."
+                }
+              ]
+            },
+            "capabilities": {
+              "auth_provider": true,
+              "model_provider": true,
+              "executor": true,
+              "executor_model_scope": "oauth",
+              "executor_input_formats": [
+                "chat-completions"
+              ],
+              "executor_output_formats": [
+                "chat-completions"
+              ],
+              "management_api": true,
+              "quota_provider": true,
+              "request_interceptor": true,
+              "request_interceptor_omit_body_before": true,
+              "request_interceptor_omit_body_after": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "auth.identifier",
+        "request": null
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "identifier": "clinepass"
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "executor.identifier",
+        "request": null
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "identifier": "clinepass"
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "quota.identifier",
+        "request": null
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "identifier": "clinepass"
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "auth.login.start",
+        "request": {}
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": false,
+          "error": {
+            "code": "unsupported_login",
+            "message": "ClinePass uses API keys: add one on the ClinePass plugin page or upload a clinepass auth file",
+            "http_status": 400
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "quota.reset",
+        "request": null
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "success": false,
+            "message": "clinepass: quota reset is not supported"
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "plugin.shutdown",
+        "request": null
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {}
+        }
+      }
+    }
+  ]
+}

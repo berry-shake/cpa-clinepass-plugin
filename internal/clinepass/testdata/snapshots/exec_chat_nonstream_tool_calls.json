@@ -1,0 +1,394 @@
+{
+  "case": "exec_chat_nonstream_tool_calls",
+  "description": "An aggregated call with a tool call split over chunks; stream:false in the request becomes true, a base_url with /api/v1 and a prefix are honored",
+  "setup": {
+    "version": "9.9.9-snapshot",
+    "config": {
+      "base-url": "{{UPSTREAM}}",
+      "data-dir": "{{DATA_DIR}}",
+      "enabled": true,
+      "priority": 0
+    },
+    "credentials": [
+      {
+        "name": "clinepass-k1.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0001",
+          "type": "clinepass"
+        }
+      },
+      {
+        "name": "clinepass-k2.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0002",
+          "base_url": "{{UPSTREAM}}/api/v1",
+          "prefix": "cp",
+          "type": "clinepass"
+        }
+      }
+    ]
+  },
+  "upstream_script": [
+    {
+      "method": "POST",
+      "path": "/api/v1/chat/completions",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "text/event-stream"
+        ]
+      },
+      "body": "",
+      "chunks": [
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":null,\"tool_calls\":[{\"index\":0,\"id\":\"call_snap_1\",\"type\":\"function\",\"function\":{\"name\":\"read\",\"arguments\":\"\"}}]}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"{\\\"path\\\":\"}}]}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"function\":{\"arguments\":\"\\\"a.go\\\"}\"}}]}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"tool_calls\"}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"choices\":[],\"usage\":{\"prompt_tokens\":11,\"completion_tokens\":6,\"total_tokens\":17,\"prompt_tokens_details\":{\"cached_tokens\":3},\"completion_tokens_details\":{\"reasoning_tokens\":2},\"cost\":0.0001}}\n\n",
+        "data: [DONE]\n\n"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/chat/completions",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "text/event-stream"
+        ]
+      },
+      "body": "",
+      "chunks": [
+        ": OPENROUTER PROCESSING\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"reasoning\":\"A greeting.\"}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\"Hello\"}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\" there!\"}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\"}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"choices\":[],\"usage\":{\"prompt_tokens\":11,\"completion_tokens\":6,\"total_tokens\":17,\"prompt_tokens_details\":{\"cached_tokens\":3},\"completion_tokens_details\":{\"reasoning_tokens\":2},\"cost\":0.0001}}\n\n",
+        "data: [DONE]\n\n"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "rpc": {
+        "method": "executor.execute",
+        "request": {
+          "AuthID": "clinepass-k1.json",
+          "AuthProvider": "clinepass",
+          "Model": "deepseek-v4.1-flash-1017",
+          "Format": "openai",
+          "Stream": false,
+          "Alt": "",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ],
+            "Authorization": [
+              "Bearer sk-cpa-client-fake"
+            ],
+            "Content-Type": [
+              "application/json"
+            ],
+            "User-Agent": [
+              "snapshot-client/1.0"
+            ]
+          },
+          "Query": null,
+          "OriginalRequest": {
+            "model": "clinepass/deepseek-v4.1-flash-1017",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Read a.go"
+              }
+            ],
+            "tools": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "read",
+                  "parameters": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "SourceFormat": "openai",
+          "Payload": {
+            "model": "deepseek-v4.1-flash-1017",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Read a.go"
+              }
+            ],
+            "tools": [
+              {
+                "type": "function",
+                "function": {
+                  "name": "read",
+                  "parameters": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "Metadata": {
+            "request_path": "/v1/chat/completions",
+            "requested_model": "clinepass/deepseek-v4.1-flash-1017",
+            "selected_auth_id": "clinepass-k1.json",
+            "selected_auth_index": "idx-1"
+          },
+          "StorageJSON": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthMetadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthAttributes": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "POST",
+            "path": "/api/v1/chat/completions",
+            "query": "",
+            "header": {
+              "Accept": [
+                "text/event-stream"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "Content-Length": [
+                "280"
+              ],
+              "Content-Type": [
+                "application/json"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": "{\"stream_options\":{\"include_usage\":true},\"stream\":true,\"model\":\"cline-pass/deepseek-v4.1-flash-1017\",\"messages\":[{\"role\":\"user\",\"content\":\"Read a.go\"}],\"tools\":[{\"type\":\"function\",\"function\":{\"name\":\"read\",\"parameters\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}}}}}]}"
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "Payload": {
+              "choices": [
+                {
+                  "finish_reason": "tool_calls",
+                  "index": 0,
+                  "message": {
+                    "content": null,
+                    "role": "assistant",
+                    "tool_calls": [
+                      {
+                        "function": {
+                          "arguments": "{\"path\":\"a.go\"}",
+                          "name": "read"
+                        },
+                        "id": "call_snap_1",
+                        "type": "function"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "created": 1767225600,
+              "id": "gen-snap-1",
+              "model": "cline-pass/kimi-k3",
+              "object": "chat.completion",
+              "provider": "moonshotai",
+              "usage": {
+                "completion_tokens": 6,
+                "completion_tokens_details": {
+                  "reasoning_tokens": 2
+                },
+                "cost": 0.0001,
+                "prompt_tokens": 11,
+                "prompt_tokens_details": {
+                  "cached_tokens": 3
+                },
+                "total_tokens": 17
+              }
+            },
+            "Headers": {
+              "Content-Type": [
+                "application/json"
+              ]
+            },
+            "Metadata": null
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "executor.execute",
+        "request": {
+          "AuthID": "clinepass-k2.json",
+          "AuthProvider": "clinepass",
+          "Model": "kimi-k3",
+          "Format": "openai",
+          "Stream": false,
+          "Alt": "",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ],
+            "Authorization": [
+              "Bearer sk-cpa-client-fake"
+            ],
+            "Content-Type": [
+              "application/json"
+            ],
+            "User-Agent": [
+              "snapshot-client/1.0"
+            ]
+          },
+          "Query": null,
+          "OriginalRequest": {
+            "model": "clinepass/kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "stream": false,
+            "reasoning_effort": "high"
+          },
+          "SourceFormat": "openai",
+          "Payload": {
+            "model": "kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "stream": false,
+            "reasoning_effort": "high"
+          },
+          "Metadata": {
+            "request_path": "/v1/chat/completions",
+            "requested_model": "clinepass/kimi-k3",
+            "selected_auth_id": "clinepass-k2.json",
+            "selected_auth_index": "idx-2"
+          },
+          "StorageJSON": {
+            "api_key": "cline_test_fake_key_0002",
+            "base_url": "{{UPSTREAM}}/api/v1",
+            "prefix": "cp",
+            "type": "clinepass"
+          },
+          "AuthMetadata": {
+            "api_key": "cline_test_fake_key_0002",
+            "base_url": "{{UPSTREAM}}/api/v1",
+            "prefix": "cp",
+            "type": "clinepass"
+          },
+          "AuthAttributes": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "POST",
+            "path": "/api/v1/chat/completions",
+            "query": "",
+            "header": {
+              "Accept": [
+                "text/event-stream"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0002"
+              ],
+              "Content-Length": [
+                "161"
+              ],
+              "Content-Type": [
+                "application/json"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": "{\"stream_options\":{\"include_usage\":true},\"model\":\"cline-pass/kimi-k3\",\"messages\":[{\"role\":\"user\",\"content\":\"Say hello\"}],\"stream\":true,\"reasoning_effort\":\"high\"}"
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "Payload": {
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "Hello there!",
+                    "reasoning": "A greeting.",
+                    "role": "assistant"
+                  }
+                }
+              ],
+              "created": 1767225600,
+              "id": "gen-snap-1",
+              "model": "cline-pass/kimi-k3",
+              "object": "chat.completion",
+              "provider": "moonshotai",
+              "usage": {
+                "completion_tokens": 6,
+                "completion_tokens_details": {
+                  "reasoning_tokens": 2
+                },
+                "cost": 0.0001,
+                "prompt_tokens": 11,
+                "prompt_tokens_details": {
+                  "cached_tokens": 3
+                },
+                "total_tokens": 17
+              }
+            },
+            "Headers": {
+              "Content-Type": [
+                "application/json"
+              ]
+            },
+            "Metadata": null
+          }
+        }
+      }
+    }
+  ]
+}

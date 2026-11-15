@@ -1,0 +1,254 @@
+{
+  "case": "quota_fetch_errors",
+  "description": "Usage errors fail quota.fetch and skip the plan: 401, success:false, an answer without limits",
+  "setup": {
+    "version": "9.9.9-snapshot",
+    "config": {
+      "base-url": "{{UPSTREAM}}",
+      "data-dir": "{{DATA_DIR}}",
+      "enabled": true,
+      "priority": 0
+    },
+    "credentials": [
+      {
+        "name": "clinepass-k1.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0001",
+          "type": "clinepass"
+        }
+      },
+      {
+        "name": "clinepass-k2.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0002",
+          "type": "clinepass"
+        }
+      },
+      {
+        "name": "clinepass-k3.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0003",
+          "type": "clinepass"
+        }
+      }
+    ]
+  },
+  "upstream_script": [
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan/usage-limits",
+      "status": 401,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":false,\"error\":\"Unauthorized\"}",
+      "chunks": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan/usage-limits",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":false,\"error\":\"No active ClinePass subscription\"}",
+      "chunks": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan/usage-limits",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":true,\"data\":{}}",
+      "chunks": []
+    }
+  ],
+  "steps": [
+    {
+      "rpc": {
+        "method": "quota.fetch",
+        "request": {
+          "auth_index": "idx-1",
+          "auth_id": "clinepass-k1.json",
+          "provider": "clinepass",
+          "storage_json": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "metadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "host": {
+            "AuthDir": "",
+            "ProxyURL": "",
+            "ForceModelPrefix": false,
+            "OAuthModelAlias": null,
+            "ExcludedModels": null
+          },
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan/usage-limits",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": false,
+          "error": {
+            "code": "upstream_401",
+            "message": "clinepass: Unauthorized",
+            "http_status": 401
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "quota.fetch",
+        "request": {
+          "auth_index": "idx-2",
+          "auth_id": "clinepass-k2.json",
+          "provider": "clinepass",
+          "storage_json": {
+            "api_key": "cline_test_fake_key_0002",
+            "type": "clinepass"
+          },
+          "metadata": {
+            "api_key": "cline_test_fake_key_0002",
+            "type": "clinepass"
+          },
+          "host": {
+            "AuthDir": "",
+            "ProxyURL": "",
+            "ForceModelPrefix": false,
+            "OAuthModelAlias": null,
+            "ExcludedModels": null
+          },
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan/usage-limits",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0002"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": false,
+          "error": {
+            "code": "upstream_error",
+            "message": "clinepass: No active ClinePass subscription",
+            "retryable": true,
+            "http_status": 502
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "quota.fetch",
+        "request": {
+          "auth_index": "idx-3",
+          "auth_id": "clinepass-k3.json",
+          "provider": "clinepass",
+          "storage_json": {
+            "api_key": "cline_test_fake_key_0003",
+            "type": "clinepass"
+          },
+          "metadata": {
+            "api_key": "cline_test_fake_key_0003",
+            "type": "clinepass"
+          },
+          "host": {
+            "AuthDir": "",
+            "ProxyURL": "",
+            "ForceModelPrefix": false,
+            "OAuthModelAlias": null,
+            "ExcludedModels": null
+          },
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan/usage-limits",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0003"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": false,
+          "error": {
+            "code": "invalid_upstream_response",
+            "message": "clinepass: decode /api/v1/users/me/plan/usage-limits: no limits",
+            "http_status": 502
+          }
+        }
+      }
+    }
+  ]
+}

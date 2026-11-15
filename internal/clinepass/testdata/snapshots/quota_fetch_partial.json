@@ -1,0 +1,263 @@
+{
+  "case": "quota_fetch_partial",
+  "description": "A failed plan query leaves the plan out and is not cached; a window without a figure gets no bar",
+  "setup": {
+    "version": "9.9.9-snapshot",
+    "config": {
+      "base-url": "{{UPSTREAM}}",
+      "data-dir": "{{DATA_DIR}}",
+      "enabled": true,
+      "priority": 0
+    },
+    "credentials": [
+      {
+        "name": "clinepass-k1.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0001",
+          "type": "clinepass"
+        }
+      }
+    ]
+  },
+  "upstream_script": [
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan/usage-limits",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":true,\"data\":{\"limits\":[{\"type\":\"five_hour\",\"percentUsed\":0,\"resetsAt\":\"2026-01-02T07:00:00Z\"},{\"type\":\"weekly\"}]}}",
+      "chunks": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan",
+      "status": 500,
+      "header": {
+        "Content-Type": [
+          "text/plain"
+        ]
+      },
+      "body": "boom",
+      "chunks": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan/usage-limits",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":true,\"data\":{\"limits\":[{\"type\":\"five_hour\",\"percentUsed\":12.5,\"resetsAt\":\"2026-01-02T07:00:00Z\"},{\"type\":\"weekly\",\"percentUsed\":40,\"resetsAt\":\"2026-01-05T00:00:00Z\"},{\"type\":\"monthly\",\"percentUsed\":75,\"resetsAt\":\"2026-01-20T09:30:00Z\"}]}}",
+      "chunks": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/users/me/plan",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "application/json"
+        ]
+      },
+      "body": "{\"success\":true,\"data\":{\"userId\":\"user-fake-1\",\"subscriptionId\":\"sub-fake-1\",\"currentPeriodEnd\":\"2026-01-20T09:30:00Z\",\"plan\":{\"displayName\":\"Cline Pass (Monthly)\"}}}",
+      "chunks": []
+    }
+  ],
+  "steps": [
+    {
+      "rpc": {
+        "method": "quota.fetch",
+        "request": {
+          "auth_index": "idx-1",
+          "auth_id": "clinepass-k1.json",
+          "provider": "clinepass",
+          "storage_json": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "metadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "host": {
+            "AuthDir": "",
+            "ProxyURL": "",
+            "ForceModelPrefix": false,
+            "OAuthModelAlias": null,
+            "ExcludedModels": null
+          },
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan/usage-limits",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "groups": [
+              {
+                "displayName": "ClinePass",
+                "buckets": [
+                  {
+                    "window": "5h",
+                    "remainingFraction": 1,
+                    "resetTime": "2026-01-02T07:00:00Z"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "quota.fetch",
+        "request": {
+          "auth_index": "idx-1",
+          "auth_id": "clinepass-k1.json",
+          "provider": "clinepass",
+          "storage_json": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "metadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "host": {
+            "AuthDir": "",
+            "ProxyURL": "",
+            "ForceModelPrefix": false,
+            "OAuthModelAlias": null,
+            "ExcludedModels": null
+          },
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan/usage-limits",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/users/me/plan",
+            "query": "",
+            "header": {
+              "Accept": [
+                "application/json"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ]
+            },
+            "body": ""
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "subscription": {
+              "plan": "Cline Pass (Monthly)"
+            },
+            "groups": [
+              {
+                "displayName": "ClinePass",
+                "buckets": [
+                  {
+                    "window": "5h",
+                    "remainingFraction": 0.875,
+                    "resetTime": "2026-01-02T07:00:00Z"
+                  },
+                  {
+                    "window": "7d",
+                    "remainingFraction": 0.6,
+                    "resetTime": "2026-01-05T00:00:00Z"
+                  },
+                  {
+                    "window": "monthly",
+                    "remainingFraction": 0.25,
+                    "resetTime": "2026-01-20T09:30:00Z"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
