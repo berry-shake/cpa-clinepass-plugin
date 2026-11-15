@@ -124,6 +124,9 @@
               ],
               "User-Agent": [
                 "cpa-clinepass-plugin/9.9.9-snapshot"
+              ],
+              "X-Response-Format": [
+                "openai"
               ]
             },
             "body": "{\"stream_options\":{\"include_usage\":true},\"stream\":true,\"model\":\"cline-pass/kimi-k3\",\"messages\":[{\"role\":\"user\",\"content\":\"Say hello\"}],\"max_tokens\":64,\"temperature\":0.2}"

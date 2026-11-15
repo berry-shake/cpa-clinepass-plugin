@@ -24,6 +24,10 @@ const DefaultBaseURL = "https://api.cline.bot"
 // Completions API; CPA translates Messages and Responses requests to it.
 const EndpointChat = "/api/v1/chat/completions"
 
+// HeaderResponseFormat set to "openai" makes Cline answer non-stream
+// requests in the standard OpenAI shape instead of {"success","data"}.
+const HeaderResponseFormat = "X-Response-Format"
+
 // Account and catalog endpoints. Their answers are wrapped as
 // {"success":true,"data":...}.
 const (

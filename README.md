@@ -89,9 +89,10 @@ plugins:
 | `count_tokens` | 不支持，回 501 |
 
 - 只改写请求体里的 `model`，其余原样转发；流式请求会自动加上 `stream_options.include_usage`
+- 请求头带 `X-Response-Format: openai`（[Cline 文档](https://docs.cline.bot/api/chat-completions)），上游的非流式回答是标准 OpenAI 格式，不再包一层 `{success,data}`
 - **非流式请求**：改成 `"stream": true` 发给 Cline，把收到的流合并成一个 `chat.completion` 返回。正文、推理内容按顺序拼接，工具调用按序号合并参数，`usage` 取最后一个。流里任何位置出错、没收到结束标记、或者整个回答为空，都按失败处理（空回答报 502 `empty_response`，CPA 可以重试或换 Key）
 - 流式响应在第一帧真正的输出之前，上游报错（限流、额度用完）按普通错误处理，CPA 照常冷却或换 Key；流没收到结束帧就断了，记为 `stream_truncated`（502）
-- Cline 在流里用 `{"success":false,...}` 报的错，按错误事件处理
+- Cline 在流里报错的两种形式都按错误事件处理：`{"success":false,...}`，以及文档写的 `finish_reason: "error"` 加 `choices[].error`（[Cline 文档](https://docs.cline.bot/api/errors)）。同一帧里带的输出和用量照常转发、记日志。错误码 `rate_limit` 报 429，`context_length_exceeded` 报 400，其他报 502
 
 **上游错误**：
 

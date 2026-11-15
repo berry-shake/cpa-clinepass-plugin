@@ -475,6 +475,22 @@ func errorCases(k1 caseCredential) []snapshotCase {
 			},
 		},
 		{
+			name:        "error_stream_finish_reason",
+			description: "Cline's documented mid-stream error (finish_reason \"error\" with choices[].error) is read as an error: before output it fails a stream request (rate_limit -> 429), after output the text goes on and the error follows, and it fails an aggregated call",
+			credentials: []caseCredential{k1},
+			script: []snapshotReply{
+				sseReply(pathChat, chatChunk(`{"role":"assistant","content":""}`, ""), `data: {"id":"gen-snap-1","choices":[{"index":0,"delta":{},"finish_reason":"error","error":{"code":"rate_limit","message":"Rate limit hit during generation"}}]}`),
+				sseReply(pathChat, chatChunk(`{"role":"assistant","content":"Partial"}`, ""), `data: {"id":"gen-snap-1","choices":[{"index":0,"delta":{"content":" answer"},"finish_reason":"error","error":{"code":"server_error","message":"Upstream provider failed during generation"}}]}`),
+				sseReply(pathChat, chatChunk(`{"role":"assistant","content":"Hel"}`, ""), `data: {"id":"gen-snap-1","choices":[{"index":0,"delta":{},"finish_reason":"error","error":{"code":"context_length_exceeded","message":"The input exceeds the model's maximum context length."}}]}`),
+			},
+			steps: []caseStep{
+				execStep(pluginabi.MethodExecutorExecuteStream, stream("stream-fr-1")),
+				execStep(pluginabi.MethodExecutorExecuteStream, stream("stream-fr-2")),
+				execStep(pluginabi.MethodExecutorExecute, chat()),
+				mgmt(http.MethodGet, mgmtBase+"/logs", ""),
+			},
+		},
+		{
 			name:        "error_aggregated",
 			description: "Aggregated calls fail on an error after output, on an empty completion and on a truncated stream",
 			credentials: []caseCredential{k1},

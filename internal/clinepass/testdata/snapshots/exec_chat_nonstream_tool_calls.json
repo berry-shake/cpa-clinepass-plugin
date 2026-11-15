@@ -189,6 +189,9 @@
               ],
               "User-Agent": [
                 "cpa-clinepass-plugin/9.9.9-snapshot"
+              ],
+              "X-Response-Format": [
+                "openai"
               ]
             },
             "body": "{\"stream_options\":{\"include_usage\":true},\"stream\":true,\"model\":\"cline-pass/deepseek-v4.1-flash-1017\",\"messages\":[{\"role\":\"user\",\"content\":\"Read a.go\"}],\"tools\":[{\"type\":\"function\",\"function\":{\"name\":\"read\",\"parameters\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}}}}}]}"
@@ -341,6 +344,9 @@
               ],
               "User-Agent": [
                 "cpa-clinepass-plugin/9.9.9-snapshot"
+              ],
+              "X-Response-Format": [
+                "openai"
               ]
             },
             "body": "{\"stream_options\":{\"include_usage\":true},\"model\":\"cline-pass/kimi-k3\",\"messages\":[{\"role\":\"user\",\"content\":\"Say hello\"}],\"stream\":true,\"reasoning_effort\":\"high\"}"

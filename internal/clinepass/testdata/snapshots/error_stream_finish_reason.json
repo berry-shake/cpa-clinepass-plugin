@@ -1,0 +1,584 @@
+{
+  "case": "error_stream_finish_reason",
+  "description": "Cline's documented mid-stream error (finish_reason \"error\" with choices[].error) is read as an error: before output it fails a stream request (rate_limit -> 429), after output the text goes on and the error follows, and it fails an aggregated call",
+  "setup": {
+    "version": "9.9.9-snapshot",
+    "config": {
+      "base-url": "{{UPSTREAM}}",
+      "data-dir": "{{DATA_DIR}}",
+      "enabled": true,
+      "priority": 0
+    },
+    "credentials": [
+      {
+        "name": "clinepass-k1.json",
+        "fields": {
+          "api_key": "cline_test_fake_key_0001",
+          "type": "clinepass"
+        }
+      }
+    ]
+  },
+  "upstream_script": [
+    {
+      "method": "POST",
+      "path": "/api/v1/chat/completions",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "text/event-stream"
+        ]
+      },
+      "body": "",
+      "chunks": [
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"\"}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"error\",\"error\":{\"code\":\"rate_limit\",\"message\":\"Rate limit hit during generation\"}}]}\n\n"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/chat/completions",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "text/event-stream"
+        ]
+      },
+      "body": "",
+      "chunks": [
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Partial\"}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"choices\":[{\"index\":0,\"delta\":{\"content\":\" answer\"},\"finish_reason\":\"error\",\"error\":{\"code\":\"server_error\",\"message\":\"Upstream provider failed during generation\"}}]}\n\n"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/chat/completions",
+      "status": 200,
+      "header": {
+        "Content-Type": [
+          "text/event-stream"
+        ]
+      },
+      "body": "",
+      "chunks": [
+        "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Hel\"}}]}\n\n",
+        "data: {\"id\":\"gen-snap-1\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"error\",\"error\":{\"code\":\"context_length_exceeded\",\"message\":\"The input exceeds the model's maximum context length.\"}}]}\n\n"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "rpc": {
+        "method": "executor.execute_stream",
+        "request": {
+          "AuthID": "clinepass-k1.json",
+          "AuthProvider": "clinepass",
+          "Model": "kimi-k3",
+          "Format": "openai",
+          "Stream": true,
+          "Alt": "",
+          "Headers": {
+            "Accept": [
+              "text/event-stream"
+            ],
+            "Authorization": [
+              "Bearer sk-cpa-client-fake"
+            ],
+            "Content-Type": [
+              "application/json"
+            ],
+            "User-Agent": [
+              "snapshot-client/1.0"
+            ]
+          },
+          "Query": null,
+          "OriginalRequest": {
+            "model": "clinepass/kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "max_tokens": 64,
+            "stream": true
+          },
+          "SourceFormat": "openai",
+          "Payload": {
+            "model": "kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "max_tokens": 64,
+            "stream": true
+          },
+          "Metadata": {
+            "request_path": "/v1/chat/completions",
+            "requested_model": "clinepass/kimi-k3",
+            "selected_auth_id": "clinepass-k1.json",
+            "selected_auth_index": "idx-1"
+          },
+          "StorageJSON": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthMetadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthAttributes": null,
+          "stream_id": "stream-fr-1",
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "POST",
+            "path": "/api/v1/chat/completions",
+            "query": "",
+            "header": {
+              "Accept": [
+                "text/event-stream"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "Content-Length": [
+                "151"
+              ],
+              "Content-Type": [
+                "application/json"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ],
+              "X-Response-Format": [
+                "openai"
+              ]
+            },
+            "body": "{\"stream_options\":{\"include_usage\":true},\"model\":\"cline-pass/kimi-k3\",\"messages\":[{\"role\":\"user\",\"content\":\"Say hello\"}],\"max_tokens\":64,\"stream\":true}"
+          }
+        ],
+        "host_calls": [
+          {
+            "method": "host.stream.close",
+            "request": {
+              "stream_id": "stream-fr-1",
+              "error": "clinepass: Rate limit hit during generation",
+              "error_detail": {
+                "code": "rate_limit",
+                "message": "clinepass: Rate limit hit during generation",
+                "retryable": true,
+                "http_status": 429
+              }
+            }
+          }
+        ],
+        "response": {
+          "ok": true,
+          "result": {
+            "headers": {
+              "Content-Type": [
+                "text/event-stream"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "executor.execute_stream",
+        "request": {
+          "AuthID": "clinepass-k1.json",
+          "AuthProvider": "clinepass",
+          "Model": "kimi-k3",
+          "Format": "openai",
+          "Stream": true,
+          "Alt": "",
+          "Headers": {
+            "Accept": [
+              "text/event-stream"
+            ],
+            "Authorization": [
+              "Bearer sk-cpa-client-fake"
+            ],
+            "Content-Type": [
+              "application/json"
+            ],
+            "User-Agent": [
+              "snapshot-client/1.0"
+            ]
+          },
+          "Query": null,
+          "OriginalRequest": {
+            "model": "clinepass/kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "max_tokens": 64,
+            "stream": true
+          },
+          "SourceFormat": "openai",
+          "Payload": {
+            "model": "kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "max_tokens": 64,
+            "stream": true
+          },
+          "Metadata": {
+            "request_path": "/v1/chat/completions",
+            "requested_model": "clinepass/kimi-k3",
+            "selected_auth_id": "clinepass-k1.json",
+            "selected_auth_index": "idx-1"
+          },
+          "StorageJSON": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthMetadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthAttributes": null,
+          "stream_id": "stream-fr-2",
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "POST",
+            "path": "/api/v1/chat/completions",
+            "query": "",
+            "header": {
+              "Accept": [
+                "text/event-stream"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "Content-Length": [
+                "151"
+              ],
+              "Content-Type": [
+                "application/json"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ],
+              "X-Response-Format": [
+                "openai"
+              ]
+            },
+            "body": "{\"stream_options\":{\"include_usage\":true},\"model\":\"cline-pass/kimi-k3\",\"messages\":[{\"role\":\"user\",\"content\":\"Say hello\"}],\"max_tokens\":64,\"stream\":true}"
+          }
+        ],
+        "host_calls": [
+          {
+            "method": "host.stream.emit",
+            "request": {
+              "stream_id": "stream-fr-2",
+              "payload": "data: {\"id\":\"gen-snap-1\",\"object\":\"chat.completion.chunk\",\"created\":1767225600,\"model\":\"cline-pass/kimi-k3\",\"provider\":\"moonshotai\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"Partial\"}}]}\n\n"
+            }
+          },
+          {
+            "method": "host.stream.emit",
+            "request": {
+              "stream_id": "stream-fr-2",
+              "payload": "data: {\"choices\":[{\"delta\":{\"content\":\" answer\"},\"finish_reason\":null,\"index\":0}],\"id\":\"gen-snap-1\"}\n\n"
+            }
+          },
+          {
+            "method": "host.stream.emit",
+            "request": {
+              "stream_id": "stream-fr-2",
+              "payload": "data: {\"error\":{\"code\":\"server_error\",\"message\":\"Upstream provider failed during generation\"}}\n\n"
+            }
+          },
+          {
+            "method": "host.stream.close",
+            "request": {
+              "stream_id": "stream-fr-2"
+            }
+          }
+        ],
+        "response": {
+          "ok": true,
+          "result": {
+            "headers": {
+              "Content-Type": [
+                "text/event-stream"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "executor.execute",
+        "request": {
+          "AuthID": "clinepass-k1.json",
+          "AuthProvider": "clinepass",
+          "Model": "kimi-k3",
+          "Format": "openai",
+          "Stream": false,
+          "Alt": "",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ],
+            "Authorization": [
+              "Bearer sk-cpa-client-fake"
+            ],
+            "Content-Type": [
+              "application/json"
+            ],
+            "User-Agent": [
+              "snapshot-client/1.0"
+            ]
+          },
+          "Query": null,
+          "OriginalRequest": {
+            "model": "clinepass/kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "max_tokens": 64,
+            "temperature": 0.2
+          },
+          "SourceFormat": "openai",
+          "Payload": {
+            "model": "kimi-k3",
+            "messages": [
+              {
+                "role": "user",
+                "content": "Say hello"
+              }
+            ],
+            "max_tokens": 64,
+            "temperature": 0.2
+          },
+          "Metadata": {
+            "request_path": "/v1/chat/completions",
+            "requested_model": "clinepass/kimi-k3",
+            "selected_auth_id": "clinepass-k1.json",
+            "selected_auth_index": "idx-1"
+          },
+          "StorageJSON": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthMetadata": {
+            "api_key": "cline_test_fake_key_0001",
+            "type": "clinepass"
+          },
+          "AuthAttributes": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [
+          {
+            "method": "POST",
+            "path": "/api/v1/chat/completions",
+            "query": "",
+            "header": {
+              "Accept": [
+                "text/event-stream"
+              ],
+              "Accept-Encoding": [
+                "gzip"
+              ],
+              "Authorization": [
+                "Bearer cline_test_fake_key_0001"
+              ],
+              "Content-Length": [
+                "169"
+              ],
+              "Content-Type": [
+                "application/json"
+              ],
+              "User-Agent": [
+                "cpa-clinepass-plugin/9.9.9-snapshot"
+              ],
+              "X-Response-Format": [
+                "openai"
+              ]
+            },
+            "body": "{\"stream_options\":{\"include_usage\":true},\"stream\":true,\"model\":\"cline-pass/kimi-k3\",\"messages\":[{\"role\":\"user\",\"content\":\"Say hello\"}],\"max_tokens\":64,\"temperature\":0.2}"
+          }
+        ],
+        "host_calls": [],
+        "response": {
+          "ok": false,
+          "error": {
+            "code": "context_length_exceeded",
+            "message": "clinepass: The input exceeds the model's maximum context length.",
+            "http_status": 400
+          }
+        }
+      }
+    },
+    {
+      "rpc": {
+        "method": "management.handle",
+        "request": {
+          "Method": "GET",
+          "Path": "/v0/management/plugins/clinepass/logs",
+          "Headers": {
+            "Accept": [
+              "application/json"
+            ]
+          },
+          "Query": null,
+          "Body": null,
+          "host_callback_id": "host-callback-1"
+        }
+      },
+      "output": {
+        "upstream_requests": [],
+        "host_calls": [],
+        "response": {
+          "ok": true,
+          "result": {
+            "StatusCode": 200,
+            "Headers": {
+              "Cache-Control": [
+                "no-store"
+              ],
+              "Content-Type": [
+                "application/json; charset=utf-8"
+              ]
+            },
+            "Body": {
+              "items": [
+                {
+                  "id": "3",
+                  "time": "<volatile>",
+                  "endpoint": "/api/v1/chat/completions",
+                  "model": "clinepass/kimi-k3",
+                  "upstream_model": "cline-pass/kimi-k3",
+                  "served_model": "cline-pass/kimi-k3",
+                  "stream": false,
+                  "status": "error",
+                  "http_status": 400,
+                  "credential": "cline_…0001",
+                  "auth_id": "clinepass-k1.json",
+                  "duration_ms": "<volatile>",
+                  "ttft_ms": "<volatile>",
+                  "input_tokens": 0,
+                  "output_tokens": 0,
+                  "cached_tokens": 0,
+                  "error_code": "context_length_exceeded",
+                  "error": "clinepass: The input exceeds the model's maximum context length.",
+                  "error_phase": "request",
+                  "client_path": "/v1/chat/completions",
+                  "user_agent": "snapshot-client/1.0",
+                  "auth_index": "idx-1",
+                  "egress": "env",
+                  "upstream_status": 200,
+                  "attempts": 1
+                },
+                {
+                  "id": "2",
+                  "time": "<volatile>",
+                  "endpoint": "/api/v1/chat/completions",
+                  "model": "clinepass/kimi-k3",
+                  "upstream_model": "cline-pass/kimi-k3",
+                  "served_model": "cline-pass/kimi-k3",
+                  "stream": true,
+                  "status": "error",
+                  "http_status": 200,
+                  "credential": "cline_…0001",
+                  "auth_id": "clinepass-k1.json",
+                  "duration_ms": "<volatile>",
+                  "ttft_ms": "<volatile>",
+                  "input_tokens": 0,
+                  "output_tokens": 0,
+                  "cached_tokens": 0,
+                  "error_code": "server_error",
+                  "error": "clinepass: Upstream provider failed during generation",
+                  "error_phase": "stream",
+                  "client_path": "/v1/chat/completions",
+                  "user_agent": "snapshot-client/1.0",
+                  "auth_index": "idx-1",
+                  "egress": "env",
+                  "upstream_status": 200,
+                  "frames": 2,
+                  "last_frame_ms": "<volatile>",
+                  "usage_reported": false,
+                  "attempts": 1
+                },
+                {
+                  "id": "1",
+                  "time": "<volatile>",
+                  "endpoint": "/api/v1/chat/completions",
+                  "model": "clinepass/kimi-k3",
+                  "upstream_model": "cline-pass/kimi-k3",
+                  "served_model": "cline-pass/kimi-k3",
+                  "stream": true,
+                  "status": "error",
+                  "http_status": 429,
+                  "credential": "cline_…0001",
+                  "auth_id": "clinepass-k1.json",
+                  "duration_ms": "<volatile>",
+                  "input_tokens": 0,
+                  "output_tokens": 0,
+                  "cached_tokens": 0,
+                  "error_code": "rate_limit",
+                  "error": "clinepass: Rate limit hit during generation",
+                  "error_phase": "request",
+                  "client_path": "/v1/chat/completions",
+                  "user_agent": "snapshot-client/1.0",
+                  "auth_index": "idx-1",
+                  "egress": "env",
+                  "upstream_status": 200,
+                  "frames": 0,
+                  "attempts": 1
+                }
+              ],
+              "total": 3,
+              "offset": 0,
+              "retention": 100000,
+              "retention_days": 30,
+              "summary": {
+                "requests": 3,
+                "success": 0,
+                "failed": 3,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "cached_tokens": 0,
+                "cache_hit_rate": null,
+                "output_tokens_per_second": "<volatile>",
+                "e2e_tokens_per_second": "<volatile>"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

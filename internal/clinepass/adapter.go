@@ -25,9 +25,10 @@ func New() *Adapter {
 }
 
 var (
-	_ provider.Adapter       = (*Adapter)(nil)
-	_ provider.StreamFixer   = (*Adapter)(nil)
-	_ provider.ErrorRemapper = (*Adapter)(nil)
+	_ provider.Adapter         = (*Adapter)(nil)
+	_ provider.StreamFixer     = (*Adapter)(nil)
+	_ provider.ErrorRemapper   = (*Adapter)(nil)
+	_ provider.HeaderDecorator = (*Adapter)(nil)
 )
 
 // Spec describes the plugin. Cline serves Chat Completions only (CPA
@@ -62,6 +63,15 @@ func (a *Adapter) Spec() provider.Spec {
 		Protocols:     []provider.Protocol{provider.Chat},
 		AggregateChat: true,
 	}
+}
+
+// Decorate asks Cline for the standard OpenAI shape of non-stream answers
+// (X-Response-Format: openai, https://docs.cline.bot/api/chat-completions);
+// without it they come wrapped as {"success":true,"data":{...}}. Aggregated
+// calls go upstream as streams, which the header leaves as they are; it
+// covers an upstream that answers one of them with a plain body anyway.
+func (a *Adapter) Decorate(header http.Header, _ provider.CallInput) {
+	header.Set(HeaderResponseFormat, "openai")
 }
 
 // Endpoint is where Cline serves Chat Completions, the only protocol
