@@ -274,6 +274,7 @@
                 "checked_at": "2026-01-02T03:04:05Z",
                 "last_error": "/api/v1/ai/cline/recommended-models returned no ClinePass models"
               },
+              "runtime": "<volatile>",
               "credentials": [
                 {
                   "auth_index": "idx-1",
